@@ -6,8 +6,8 @@ android {
         applicationId = "com.dimaxstudio.horario.estable"
         minSdk = 24
         targetSdk = 29
-        versionCode = 8
-        versionName = "1.0.7"
+        versionCode = 9
+        versionName = "1.0.8"
     }
     lint { abortOnError = false }
     buildTypes { release { isMinifyEnabled = false } }

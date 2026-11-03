@@ -7,6 +7,10 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.CookieManager;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 public class MainActivity extends Activity {
     private WebView webView;
@@ -23,8 +27,23 @@ public class MainActivity extends Activity {
         settings.setAllowContentAccess(false);
         settings.setAllowFileAccessFromFileURLs(false);
         settings.setAllowUniversalAccessFromFileURLs(false);
-        webView.loadUrl("file:///android_asset/index.html");
+        settings.setMediaPlaybackRequiresUserGesture(false);
+        CookieManager.getInstance().setAcceptThirdPartyCookies(webView, true);
+        webView.addJavascriptInterface(new Object() { @JavascriptInterface public void noop() {} }, "HorarioBridge");
+        try (InputStream in = getAssets().open("index.html")) {
+            byte[] bytes = new byte[in.available()];
+            int offset = 0, count;
+            while (offset < bytes.length && (count = in.read(bytes, offset, bytes.length-offset)) > 0) offset += count;
+            webView.loadDataWithBaseURL("https://horario.dimaxstudio.app/", new String(bytes, StandardCharsets.UTF_8), "text/html", "UTF-8", null);
+        } catch (Exception ex) { webView.loadUrl("about:blank"); }
         setContentView(webView);
+    }
+    @Override public void onBackPressed() {
+        webView.evaluateJavascript("androidBack()", value -> {
+            if ("false".equals(value)) {
+                new android.app.AlertDialog.Builder(this).setMessage("¿Salir de Horario?").setNegativeButton("Cancelar", (d,w)->{}).setPositiveButton("Salir", (d,w)->finish()).show();
+            }
+        });
     }
     @Override protected void onDestroy() { if (webView != null) webView.destroy(); super.onDestroy(); }
 }

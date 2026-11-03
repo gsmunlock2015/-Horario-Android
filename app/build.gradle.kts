@@ -5,9 +5,9 @@ android {
     defaultConfig {
         applicationId = "com.dimaxstudio.horario.estable"
         minSdk = 24
-        targetSdk = 29
-        versionCode = 9
-        versionName = "1.0.8"
+        targetSdk = 35
+        versionCode = 10
+        versionName = "1.0.9"
     }
     lint { abortOnError = false }
     buildTypes { release { isMinifyEnabled = false } }
